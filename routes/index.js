@@ -1,18 +1,12 @@
 const db = require ("./../inc/dbConnection")
 const express = require ('express')
 const router = express.Router()
+const dbMenus = require ("./../inc/queryMenus")
 
-/* GET home page. */
+
 router.get('/', (req, res, next) => {
 
-    db.query ("SELECT * FROM tb_menus ORDER BY title", (error, results) => {
-        if (error)
-        {
-            console.log (error)
-
-            return false
-        }
-
+    dbMenus.getMenus().then (results => {
         res.render("index", { title: 'Restaurante Saboroso!', menus: results })
     })
 });
@@ -28,10 +22,13 @@ router.get ("/contatos", (req, res, next) => {
 
 router.get ("/menus", (req, res, next) => {
 
-    res.render ("menus", {
-        title: "Menus | Restaurante Saboroso",
-        bgimage: "images/img_bg_1.jpg",
-        h1: "Saboreie nosso menu!"
+    dbMenus.getMenus().then (results => {
+        res.render ("menus", {
+            title: "Menus | Restaurante Saboroso",
+            bgimage: "images/img_bg_1.jpg",
+            h1: "Saboreie nosso menu!",
+            menus: results
+        })
     })
 })
 
