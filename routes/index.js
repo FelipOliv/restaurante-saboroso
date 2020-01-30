@@ -2,6 +2,7 @@ const db = require ("./../inc/dbConnection")
 const express = require ('express')
 const router = express.Router()
 const dbMenus = require ("./../inc/queryMenus")
+const showReservationForm = require ("./../inc/showFormReservation")
 
 
 router.get('/', (req, res, next) => {
@@ -34,11 +35,47 @@ router.get ("/menus", (req, res, next) => {
 
 router.get ("/reservas", (req, res, next) => {
 
-    res.render ("reservations", {
-        title: "Reservas | Restaurante Saboroso",
-        bgimage: "images/img_bg_2.jpg",
-        h1: "Reserve uma Mesa!"
-    })
+    showReservationForm.render (req, res)
+})
+
+router.post ("/reservas", (req, res, next) => {
+
+    const { name, email, people, date, time } = req.body
+
+    if ( ! name )
+    {
+        showReservationForm.render (req, res, "Preencha o campo nome")
+    }
+    else if ( ! email )
+    {
+        showReservationForm.render (req, res, "Preencha o campo e-mail")
+    }
+    else if ( ! people )
+    {
+        showReservationForm.render (req, res, "Informe para quantas pessoas é a mesa")
+    }
+    else if ( ! date )
+    {
+        showReservationForm.render (req, res, "Informe a data da reserva")
+    }
+    else if ( ! time )
+    {
+        showReservationForm.render (req, res, "Preencha a hora da reserva")
+    }
+    else
+    {
+        showReservationForm.save(req.body).then (results => {
+
+            req.body = {}
+
+            showReservationForm.render (req, res, null, "Reseva realizada !")
+
+        }).catch (error => {
+
+            showReservationForm.render (req, res, error.message, null)
+
+        })
+    }
 })
 
 router.get ("/servicos", (req, res, next) => {
